@@ -105,6 +105,9 @@ insert into ordered values(null, 103, 2, 3);
 
 
 
+
+
+
 准备
 创建一张学生表
 CREATE TABLE students (
@@ -174,6 +177,88 @@ INSERT INTO students (name, cla, chinese, math, english) VALUES
 
 
 
+日期函数练习
+1 获取当前日期,获取当前时间,获取当前时间戳,获取时间戳的日期部分
+2 在1999-01-15中加上一年,减去10天
+3 求2019-09-09和2018-09-08的相差多少天
+4 获取当前日期时间
+5 创建一张表(id,birthday)存储生日日期,并将当前时间添加到表中
+6 创建一张留言表(id,content,sendtime),并插入两条信息,显示所有信息(发布时间只显示日期不显示时间),查询在两分钟内发布的帖子
+
+1 select current_date(); select current_time(); select current_timestamp(); select date(current_timestamp());
+2 select date_sub(date_add('1999-01-15', interval 1 year), interval 10 day);
+3 select datediff('2019-09-09', '2018-09-08');
+4 select now();
+5 create table birth(id int primary key auto_increment, birthday date);
+	insert into birth(birthday) values(now());
+	select * from birth;
+6 create table note(id int primary key auto_increment, content varchar(100), sendtime datetime);
+	insert into note(content, sendtime) values('hello', now());
+	insert into note(content, sendtime) values('how old are you', now());
+	select id,content,date(sendtime) from note;
+	select * from note where date_add(sendtime, interval 2 minute)>now();
+
+
+
+字符串函数练习
+创建一张学生表
+CREATE TABLE students (
+	name VARCHAR(20) NOT NULL,
+	cla VARCHAR(10) NOT NULL,
+	chinese INT,
+	math INT,
+	english INT
+);
+插入数据
+INSERT INTO students VALUES ('白龙马', 'c++大神班', 100, 83, 60);
+INSERT INTO students VALUES ('猴哥', 'java大牛班', 73, 88, 59);
+INSERT INTO students (name, cla, chinese, math, english) VALUES
+	('猪悟能', 'c++大神班', 88, 98, 90),
+	('曹孟德', 'java大牛班', 82, 84, 67),
+	('赵云', '小白班', 75, 65, 30),
+	('刘玄德', 'java大牛班', 55, 85, 45),
+	('孙权', 'c++大神班', 70, 73, 78),
+	('宋公明', 'c++大神班', 75, 65, 30), 
+	('曹操', '小白班', 75, 65, 30);
+1 获取表中cla列的字符集
+2 要求显示student表中的信息,显示格式: "XXX的语文是XXX分,数学XXX分,英语XXX分"
+3 求学生表中学生姓名占用的字节数
+4 将cla字段小写替换为大写显示 c -> C java -> JAVA
+5 截取name字段,姓氏部分
+6 大写显示cla字段的首字母
+
+1 select charset(cla) from students;
+2 select concat('姓名:', name, ' 班级:', cla, ' 语文:', chinese, ' 数学:', math, ' 英语:', english) as '成绩' from students;
+3 select length(name) from students;
+4 select name, replace(cla, 'c', 'C') from students; select name, replace(cla, 'java', 'JAVA') from students;
+5 select substring(name, 0, 1) from students;
+6 select name,ucase(cla) from students;
+
+
+
+
+
+数学函数练习 && 其它函数练习
+1 -100.2 绝对值
+2 23.04 向上取整
+3 23.7 向下取整
+4 12.3456 保留两位小数,四舍五入
+5 产生随机数
+
+6 查询当前用户
+7 对一个字符串'haha'进行md5摘要，摘要后得到一个32位字符串
+8 显示当前正在使用的数据库
+9 ifnull（val1， val2） 如果val1为null，返回val2，否则返回val1的值
+
+1 select abs(-100.2);
+2 select ceiling(23.04);
+3 select floor(23.7);
+4 select format(12.3456, 2);
+5 select rand();
+6 select user();
+7 select md5('haha');
+8 select database();
+9 select ifnull(null, '22222'); select ifnull('11111', '22222');
 
 
 
@@ -183,23 +268,108 @@ INSERT INTO students (name, cla, chinese, math, english) VALUES
 
 
 
+create database job;
+use job;
+员工表
+create table emp(
+	empno int primary key auto_increment comment'员工id',
+	ename varchar(32) comment'员工名字',
+	job varchar(32) comment'职位',
+	mgr int comment'领导id',
+	hiredate datetime comment'雇佣时间',
+	sal float comment'工资',
+	comm float comment'奖金',
+	deptno int comment'部门id',
+	foreign key(deptno) references dept(deptno)
+);
+向员工表中插入100条数据(linux/mysql/create_mysql/insert.cpp)
+
+
+部门表
+create table dept (
+	deptno int primary key auto_increment comment'部门id',
+	dname varchar(32) comment'部门名',
+	loc varchar(32) comment'部门地点'
+);
+insert into dept(deptno, dname, loc) values(101, '阿里巴巴', '北京');
+insert into dept(deptno, dname, loc) values(102, '腾讯', '杭州');
+insert into dept(deptno, dname, loc) values(103, '头条', '深圳');
+insert into dept(dname, loc) values('华为', '北京');
+insert into dept(dname, loc) values('美团', '上海');
+insert into dept(dname, loc) values('滴滴', '北京');
+insert into dept(dname, loc) values('快手', '上海');
+insert into dept(dname, loc) values('CVTE', '南京');
+insert into dept(dname, loc) values('百度', '深圳');
+insert into dept(dname, loc) values('京东', '西安');
+select * from dept;
+
+
+工资等级
+create table salgrade (
+	losal float(7,2) comment'最低',
+	hisal float(7,2) comment'最高',
+	grade varchar(32) comment'等级'
+);
+insert into salgrade values(2001, 4000, '一级');
+insert into salgrade values(4001, 6000, '二级');
+insert into salgrade values(6001, 8000, '三级');
+insert into salgrade values(8001, 10000, '四级');
+insert into salgrade values(10001, 20000, '五级');
+select * from salgrade;
 
 
 
 
+1 查询工资高于10000或岗位为C++后台开发的员工,同时还要满足他们的姓名首字母为大写的J
+2 按照部门号升序而员工的工资降序排序
+3 使用年薪进行降序排序
+4 显示工资最高的员工的名字和工作岗位
+5 显示工资高于平均工资的员工信息
+6 显示每个部门的平均工资和最高工资
+7 显示平均工资低于6000的部门号和它的平均工资
+8 显示每种岗位的雇员总数,平均工资
+
+1 select ename,sal,job from emp where sal>10000 or (job like 'C++%' and ename like 'J%');
+2 select ename,deptno,sal from emp order by deptno,sal desc;
+3 select ename,sal*12+comm as y from emp order by y desc; 
+4 select ename,job,sal from emp where sal = (select max(sal) from emp);
+5 select * from emp where sal > (select avg(sal) from emp);
+6 select avg(sal),max(sal) from emp group by deptno;
+7 select deptno,avg(sal) from emp group by deptno having avg(sal)<6000;
+8 select count(*),avg(sal) from emp group by deptno;
 
 
+1 显示雇员名,雇员工资以及所在部门的名字因为上面的数据来自emp和dept两张表,因此要联合查询
+2 显示部门号为102的部门名,员工名和工资
+3 显示各个员工的姓名,工资,及工资级别
+4 显示员工XO的上级领导的编号和姓名(mgr是员工领导的编号)
+5 显示LD同一部门的员工
+6 in关键字: 查询和107号部门的工作相同的雇员的名字,岗位,工资,部门号,但是不包含107自己的
+7 all关键字: 显示工资比部门107的所有员工的工资高的员工的姓名,工资和部门号
+8 any关键字: 显示工资比部门107的任意员工的工资高的员工的姓名,工资和部门号
+9 查询和LD的部门和岗位完全相同的所有雇员，不含LD本人
 
+10 显示高于自己部门平均工资的员工的姓名、部门、工资、平均工资
+11 查找每个部门工资最高的人的姓名、工资、部门、最高工资
+12 显示每个部门的信息(部门名,编号,地址)和人员数量
+13 将工资大于9000或职位是Web开发的人找出来
 
-
-
-
-
-
-
-
-
-
+1 select ename,sal,dname from emp,dept where emp.deptno=dept.deptno;
+2 select dname,ename,sal from emp,dept where emp.deptno=dept.deptno and emp.deptno=10;
+3 select ename,sal,grade from emp,salgrade where sal between losal and hisal;
+4 select empno,ename from emp where empno=(select mgr from emp where ename='LD');
+	select leader.empno, leader.ename from emp leader, emp worker where leader.empno=worker.mgr and worker.ename='LD';
+5 select * from emp where deptno=(select deptno from emp where ename='LD');
+6 select ename,job,sal,deptno from emp where job in (select distinct job from emp where deptno=107);
+7 select ename,sal,deptno from emp where sal > all(select sal from emp where deptno=107);
+8 select ename,sal,deptno from emp where sal < any(select sal from emp where deptno=107);
+9 select * from emp where (deptno,job)=(select deptno,job from emp where ename='LD');
+10 select ename,deptno,sal,format(asal,2) from emp, (select avg(sal) asal,deptno dt from emp group by deptno) tmp where emp.sal>tmp.asal and emp.deptno=tmp.dt;
+11 select ename,sal,deptno,msal from emp,(select max(sal) msal,deptno dt from emp group by deptno) tmp where emp.sal=tmp.msal and emp.deptno=tmp.dt;
+12 select dept.dname,dept.deptno,dept.loc, count(*) from emp,dept where dept.deptno=emp.deptno group by dept.deptno;
+	select dname,dt,loc,cou from dept,(select deptno dt, count(*) cou from emp group by deptno) tmp where dept.deptno=tmp.dt; 
+13 select * from emp where sal > 9000 union select * from emp where job = 'Web开发';
+	select * from emp where sal > 9000 union all select * from emp where job = 'Web开发';
 
 
 
