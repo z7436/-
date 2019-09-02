@@ -1,4 +1,4 @@
-1 登录数据库
+﻿1 登录数据库
 2 显示所有数据库
 3 创建一个库 取名test,字符集utf-8,字符校验规则utf8_general_ci(不区分大小写)  utf8_bin(区分大小写)
 4 创建一个表 取名tt, 包含一个整型id, 字符串name
@@ -34,7 +34,7 @@
 9 alter database test charset=utf8; alter table tt collate utf8_bin;
 10 mysqldump -P3306 -uroot -p -B test > ./mysql.sql; mysqldump -P3306 -uroot -p -B test tt > ./table.sql; source ./mysql.sql;
 11 drop table tt; drop database test;
-12 show processlist;
+12 show processlist; 
 13 create table tt1(id int comment'学号', name varchar(32) comment'ddd', sex varchar(10), passwd varchar(20)) charset=utf8 collate utf8_general_ci;
 14 desc tt1;
 15 insert into tt1(id, name, sex, passwd) values(1, "zhao", "nan", "99999");
@@ -50,7 +50,7 @@
 
 
 
-表的约束-综合案例
+--表的约束-综合案例
 有一个商店的数据，记录客户及购物情况，有以下三个表组成：
 	商品goods(商品编号goods_id，商品名goods_name, 单价unitprice, 商品类别category, 供应商provider)
 	客户customer(客户号customer_id,姓名name,住址address,邮箱email,性别sex，身份证card_id)
@@ -177,7 +177,7 @@ INSERT INTO students (name, cla, chinese, math, english) VALUES
 
 
 
-日期函数练习
+--日期函数练习
 1 获取当前日期,获取当前时间,获取当前时间戳,获取时间戳的日期部分
 2 在1999-01-15中加上一年,减去10天
 3 求2019-09-09和2018-09-08的相差多少天
@@ -200,7 +200,7 @@ INSERT INTO students (name, cla, chinese, math, english) VALUES
 
 
 
-字符串函数练习
+--字符串函数练习
 创建一张学生表
 CREATE TABLE students (
 	name VARCHAR(20) NOT NULL,
@@ -238,7 +238,7 @@ INSERT INTO students (name, cla, chinese, math, english) VALUES
 
 
 
-数学函数练习 && 其它函数练习
+--数学函数练习 && 其它函数练习
 1 -100.2 绝对值
 2 23.04 向上取整
 3 23.7 向下取整
@@ -272,7 +272,7 @@ create database job;
 use job;
 员工表
 create table emp(
-	empno int primary key auto_increment comment'员工id',
+	empno bigint primary key auto_increment comment'员工id',
 	ename varchar(32) comment'员工名字',
 	job varchar(32) comment'职位',
 	mgr int comment'领导id',
@@ -339,6 +339,13 @@ select * from salgrade;
 8 select count(*),avg(sal) from emp group by deptno;
 
 
+
+
+
+
+
+
+--复合查询
 1 显示雇员名,雇员工资以及所在部门的名字因为上面的数据来自emp和dept两张表,因此要联合查询
 2 显示部门号为102的部门名,员工名和工资
 3 显示各个员工的姓名,工资,及工资级别
@@ -370,6 +377,102 @@ select * from salgrade;
 	select dname,dt,loc,cou from dept,(select deptno dt, count(*) cou from emp group by deptno) tmp where dept.deptno=tmp.dt; 
 13 select * from emp where sal > 9000 union select * from emp where job = 'Web开发';
 	select * from emp where sal > 9000 union all select * from emp where job = 'Web开发';
+
+
+
+
+
+
+
+--内连外连
+1 显示公司所有员工及公司信息,即使没有员工也显示公司信息(左右连接)
+
+1 select * from dept left join emp on dept.deptno=emp.deptno;
+	select * from emp right join dept on emp.deptno=dept.deptno;
+
+
+
+
+
+
+--索引特性
+构建一个8000000条记录的数据
+产生随机字符串
+delimiter $$
+create function rand_string(n INT)
+returns varchar(255)
+begin
+declare chars_str varchar(100) default
+'abcdefghijklmnopqrstuvwxyzABCDEFJHIJKLMNOPQRSTUVWXYZ';
+declare return_str varchar(255) default '';
+declare i int default 0;
+while i < n do
+set return_str =concat(return_str,substring(chars_str,floor(1+rand()*52),1));
+set i = i + 1;
+end while;
+return return_str;
+end $$
+delimiter ;
+
+产生随机数字
+delimiter $$
+create function rand_num()
+returns int(5)
+begin
+declare i int default 0;
+set i = floor(10+rand()*500);
+return i;
+end $$
+delimiter ;
+
+创建存储过程，向雇员表添加海量数据
+delimiter $$
+create procedure insert_emp(in start int(10),in max_num int(10))
+begin
+declare i int default 0;
+set autocommit = 0;
+repeat
+set i = i + 1;
+insert into emp values ((start+i)
+,rand_string(6),'SALESMAN',0001,curdate(),2000,400,rand_num());
+until i = max_num
+end repeat;
+commit;
+end $$
+delimiter ;
+
+执行存储过程，添加8000000条记录
+call insert_emp(100001, 8000000);
+
+
+1 创建主键/唯一键索引(在字段后指定,在所有字段最后指定,在创建好的表中添加索引)
+2 普通索引的创建(在建表的最后指定,在创建好的表中添加索引)
+3 全文索引的创建(在所有字段最后指定),并利用全文索引查询
+4 查询索引(三种方式)
+5 删除索引(三种方式)
+
+1 create table test(id int primary key, name varchar(32) unique);
+	create table test(id int, name varchar(32), primary key(id), unique(name));
+	alter table test add primary key(id);
+	alter table test add unique(name);
+2 create table test(id primary key, name varchar(32), index(name));
+	alter table test add index(name);
+3 create table test(id int primary key auto_increment, title varchar(200), body text, fulltext(title, body)) engine=MyISAM;
+	select * from articles where match (title,body) against ('database')
+4 show keys from emp; 
+	show index from emp;
+	desc emp;
+5 alter table emp drop primary key;
+	alter table emp drop index 索引名(索引名就是show keys from 表名中的 Key_name 字段)
+	drop index 索引名 on emp;
+
+
+
+
+
+
+
+
 
 
 
