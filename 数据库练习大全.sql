@@ -468,6 +468,51 @@ call insert_emp(100001, 8000000);
 
 
 
+--视图特性
+1 创建一个视图
+2 修改视图来影响基表,修改基表来影响视图
+3 查看视图属性
+4 删除视图
+
+1 create view v_ename_dname as select ename,dname from emp,dept where emp.deptno=dept.deptno;
+2 update v_ename_dname set dname='新的名字' where ename='SMITH';
+	update emp set ename='smith' where ename='SMITH';
+3 show table status \G;
+4 drop view v_ename_dname;
+
+
+
+
+--事务管理
+1 开始一个事务->设置保存点aa->插入一条数据->设置保存点bb->插入一条数据->查看->回滚到bb->查看->提交
+
+1 start transaction;->savepoint aa;->insert->savepoint bb;->insert;->select->rollback to bb;->select->commit;
+
+
+
+
+
+--用户管理
+1 查询用户信息
+2 创建用户,删除用户
+3 修改自己的密码,用root修改别人的密码
+4 给定用户权限,回收权限
+
+1 use mysql; select host,user,authentication_string from user;
+2 create user 'shen'@'127.0.0.1' identified by '999'; drop user 'shen'@'127.0.0.1';
+3 set password=password("999"); set password for 'shen'@'127.0.0.1'=password('999');
+4 grant all on *.* to 'shen'@'127.0.0.1';flush privileges;
+	revoke delete,create on 库.* from 'shen'@'127.0.0.1';
+
+
+
+
+
+
+
+
+
+
 
 
 
