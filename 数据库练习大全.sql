@@ -4,38 +4,50 @@
 4 创建一个表 取名tt, 包含一个整型id, 字符串name
 5 单个插入一条数据,批量插入几条数据
 6 查看表中的数据,查看表结构
-7 查看系统默认字符集,查看系统默认校验规则,查看数据库支持的所有字符集,查看数据库支持的字符集校验规则
+**7 查看系统默认字符集,查看系统默认校验规则,查看数据库支持的所有字符集,查看数据库支持的字符集校验规则
 8 显示创建语句(可以看到创建时具体使用的字符集 字符集校验规则等等 如果创建时没有指定就是默认的)
 9 修改数据库/表的字符集,校验规则
-10 数据库备份 表被备份 还原
+**10 数据库备份 表被备份 还原
 11 数据库删除,表删除
 12 查看 MySql 连接情况
-13 创建一张表id name sex passwd(给每个字段一个说明信息) 自己指定字符集和校验规则
+13 创建一张表id-不为空 name sex passwd(给每个字段一个说明信息) 自己指定字符集和校验规则
 14 查看表结构
 15 在表中添加几条数据(单条插入 多条插入)
 16 在表中添加一个字段用于保存图片路径
-17 修改字name字段 将其长度改为60
-18 删除sex列
-19 修改表名为employee
+**17 修改字name字段 将其长度改为60
+**18 删除sex列
+**19 修改表名为employee
 20 将name字段修改为Name
 21 删除该张表
-22 创建一个表 id-不为空
-
 
 
 1 mysql -h 127.0.0.1 -P3306 -uroot -p;
 2 show databases;
 3 create database test charset=utf8 collate utf8_general_ci;
 4 create table tt(id int, name varchar(32));
-5 insert into tt(id, name) values(100, "hehe"); insert into tt(id, name) values(101, "heihei"), (102, "haha");
-6 select * from tt; desc tt;
-7 show variables like "character_set_database"; show variables like "collation_database"; show charset; show collation;
+5 insert into tt(id, name) values(100, "hehe"); 
+  insert into tt(id, name) values(101, "heihei"), (102, "haha");
+6 select * from tt; 
+  desc tt;
+7 show variables like "character_set_database"; 
+  show variables like "collation_database"; 
+  show charset; 
+  show collation;
 8 show create database test;
-9 alter database test charset=utf8; alter table tt collate utf8_bin;
-10 mysqldump -P3306 -uroot -p -B test > ./mysql.sql; mysqldump -P3306 -uroot -p -B test tt > ./table.sql; source ./mysql.sql;
-11 drop table tt; drop database test;
+9 alter database test charset=utf8; 
+  alter table tt collate utf8_bin;
+10 mysqldump -P3306 -uroot -p -B test > ./mysql.sql;(离线状态) 
+   mysqldump -P3306 -uroot -p -B test tt > ./table.sql;(登录) 
+   source ./mysql.sql;
+11 delete from tt;(清空数据,不删除表结构) drop table tt; 
+   drop database test;
 12 show processlist; 
-13 create table tt1(id int comment'学号', name varchar(32) comment'ddd', sex varchar(10), passwd varchar(20)) charset=utf8 collate utf8_general_ci;
+13 create table tt1(
+	   id int comment'学号', 
+	   name varchar(32) comment'ddd', 
+	   sex varchar(10), 
+	   passwd varchar(20)
+   ) charset=utf8 collate utf8_general_ci;
 14 desc tt1;
 15 insert into tt1(id, name, sex, passwd) values(1, "zhao", "nan", "99999");
 16 alter table tt1 add asserts varchar(20) comment'图片路径';
@@ -91,8 +103,8 @@ create table if not exists ordered(
 );
 
 insert into goods values(null, '肉', 100, '吃的', '马云');
-insert into goods values(null, '蔬菜', 60, '吃的', 'ali');
-insert into goods values(null, '车', 500, '玩的', 'aliyun');
+	insert into goods values(null, '蔬菜', 60, '吃的', 'ali');
+	insert into goods values(null, '车', 500, '玩的', 'aliyun');
 
 insert into customer values('100', '客户1', '北京', '239@33.com', '男', '234675678');
 insert into customer values('103', '客户2', '上海', '231@33.com', '女', '255345678');
@@ -110,14 +122,16 @@ insert into ordered values(null, 103, 2, 3);
 
 准备
 创建一张学生表
+create database test; use test;
 CREATE TABLE students (
 	name VARCHAR(20) NOT NULL,
 	cla VARCHAR(10) NOT NULL,
 	chinese INT,
 	math INT,
-	english INT
-);
-插入数据
+	english INT comment'===english==='
+) engine=InnoDB charset=utf8;
+desc students;
+show create table students;
 INSERT INTO students VALUES ('白龙马', 'c++大神班', 100, 83, 60);
 INSERT INTO students VALUES ('猴哥', 'java大牛班', 73, 88, 59);
 INSERT INTO students (name, cla, chinese, math, english) VALUES
@@ -128,7 +142,7 @@ INSERT INTO students (name, cla, chinese, math, english) VALUES
 	('孙权', 'c++大神班', 70, 73, 78),
 	('宋公明', 'c++大神班', 75, 65, 30), 
 	('曹操', '小白班', 75, 65, 30);
-
+select * from students;
 
 1 全列查询-指定列查询-查询字段为表达式-表达式含有多个字段-为查询结果指定别名
 2 查询结果去重
@@ -138,16 +152,16 @@ INSERT INTO students (name, cla, chinese, math, english) VALUES
 6 姓孙的同学 及 孙某同学, 语文成绩好于英语成绩的同学
 7 总分在 200 分以下的同学, 语文成绩 > 80 并且不姓孙的同学
 8 同学及数学成绩,按数学成绩升序显示
-9 查询同学各门成绩, 依次按 数学降序,英语升序,语文升序的方式显示
-10 筛选分页结果(LIMIT n OFFSET s)
-11 将孙悟空同学的数学成绩变更为 80 分,将曹孟德同学的数学成绩变更为 60 分，语文成绩变更为 70 分
-12 将总成绩倒数前三的 3 位同学的数学成绩加上 30 分
+**9 查询同学各门成绩, 依次按 数学降序,英语升序,语文升序的方式显示
+**10 筛选分页结果(LIMIT n OFFSET s)
+**11 将孙悟空同学的数学成绩变更为 80 分,将曹孟德同学的数学成绩变更为 60 分，语文成绩变更为 70 分
+**12 将总成绩倒数前三的 3 位同学的数学成绩加上 30 分
 13 查询数学成绩最高的学生所有信息,将所有同学的语文成绩更新为原来的 2 倍
 14 查询数学成绩成绩平均值
 15 所有学生按照总分(别名)降序排序
-16 按照班级分组显示各科平均分
-17 统计班级共有多少同学,统计本次考试的数学成绩分数个数
-18 返回英语最高分,返回 > 70 分以上的数学最低分
+**16 按照班级分组显示各科平均分
+**17 统计班级共有多少同学,统计本次考试的数学成绩分数个数
+**18 返回英语最高分,返回 > 70 分以上的数学最低分
 19 删除孙悟空同学的考试成绩
 20 删除整张表数据，不删除表结构
 
@@ -179,11 +193,13 @@ INSERT INTO students (name, cla, chinese, math, english) VALUES
 
 --日期函数练习
 1 获取当前日期,获取当前时间,获取当前时间戳,获取时间戳的日期部分
-2 在1999-01-15中加上一年,减去10天
+**2 在1999-01-15中加上一年,减去10天
 3 求2019-09-09和2018-09-08的相差多少天
 4 获取当前日期时间
 5 创建一张表(id,birthday)存储生日日期,并将当前时间添加到表中
-6 创建一张留言表(id,content,sendtime),并插入两条信息,显示所有信息(发布时间只显示日期不显示时间),查询在两分钟内发布的帖子
+6 创建一张留言表(id,content,sendtime),并插入两条信息
+7 显示所有信息(发布时间只显示日期不显示时间),查询在两分钟内发布的帖子
+
 
 1 select current_date(); select current_time(); select current_timestamp(); select date(current_timestamp());
 2 select date_sub(date_add('1999-01-15', interval 1 year), interval 10 day);
@@ -227,11 +243,12 @@ INSERT INTO students (name, cla, chinese, math, english) VALUES
 5 截取name字段,姓氏部分
 6 大写显示cla字段的首字母
 
+
 1 select charset(cla) from students;
 2 select concat('姓名:', name, ' 班级:', cla, ' 语文:', chinese, ' 数学:', math, ' 英语:', english) as '成绩' from students;
 3 select length(name) from students;
 4 select name, replace(cla, 'c', 'C') from students; select name, replace(cla, 'java', 'JAVA') from students;
-5 select substring(name, 0, 1) from students;
+5 select substring(name, 1, 1) from students;
 6 select name,ucase(cla) from students;
 
 
@@ -268,23 +285,8 @@ INSERT INTO students (name, cla, chinese, math, english) VALUES
 
 
 
-create database job;
+create database job charset=utf8 collate utf8_general_ci engine InnoDB;
 use job;
-员工表
-create table emp(
-	empno bigint primary key auto_increment comment'员工id',
-	ename varchar(32) comment'员工名字',
-	job varchar(32) comment'职位',
-	mgr int comment'领导id',
-	hiredate datetime comment'雇佣时间',
-	sal float comment'工资',
-	comm float comment'奖金',
-	deptno int comment'部门id',
-	foreign key(deptno) references dept(deptno)
-);
-向员工表中插入100条数据(linux/mysql/create_mysql/insert.cpp)
-
-
 部门表
 create table dept (
 	deptno int primary key auto_increment comment'部门id',
@@ -303,6 +305,19 @@ insert into dept(dname, loc) values('百度', '深圳');
 insert into dept(dname, loc) values('京东', '西安');
 select * from dept;
 
+员工表
+create table emp(
+	empno bigint primary key auto_increment comment'员工id',
+	ename varchar(32) comment'员工名字',
+	job varchar(32) comment'职位',
+	mgr int comment'领导id',
+	hiredate datetime comment'雇佣时间',
+	sal float comment'工资',
+	comm float comment'奖金',
+	deptno int comment'部门id',
+	foreign key(deptno) references dept(deptno)
+);
+向员工表中插入1000000条数据(linux/mysql/create_mysql/insert.cpp)
 
 工资等级
 create table salgrade (
@@ -326,7 +341,7 @@ select * from salgrade;
 4 显示工资最高的员工的名字和工作岗位
 5 显示工资高于平均工资的员工信息
 6 显示每个部门的平均工资和最高工资
-7 显示平均工资低于6000的部门号和它的平均工资
+**7 显示平均工资低于6000的部门号和它的平均工资
 8 显示每种岗位的雇员总数,平均工资
 
 1 select ename,sal,job from emp where sal>10000 or (job like 'C++%' and ename like 'J%');
@@ -351,7 +366,7 @@ select * from salgrade;
 3 显示各个员工的姓名,工资,及工资级别
 4 显示员工XO的上级领导的编号和姓名(mgr是员工领导的编号)
 5 显示LD同一部门的员工
-6 in关键字: 查询和107号部门的工作相同的雇员的名字,岗位,工资,部门号,但是不包含107自己的
+6 in关键字: 查询和107号部门的工作相同雇的员的名字,岗位,工资,部门号,但是不包含107自己的
 7 all关键字: 显示工资比部门107的所有员工的工资高的员工的姓名,工资和部门号
 8 any关键字: 显示工资比部门107的任意员工的工资高的员工的姓名,工资和部门号
 9 查询和LD的部门和岗位完全相同的所有雇员，不含LD本人
@@ -361,8 +376,25 @@ select * from salgrade;
 12 显示每个部门的信息(部门名,编号,地址)和人员数量
 13 将工资大于9000或职位是Web开发的人找出来
 
+select ename,sal,dname from emp,dept where emp.deptno=dept.deptno;
+select dname,ename,sal from emp,dept where emp.deptno=dept.deptno and emp.deptno=102;
+select ename,sal,grade from emp,salgrade where emp.sal between salgrade.losal and salgrade.hisal order by sal;
+select employee.ename,leader.mgr,leader.ename from emp leader, emp employee where employee.mgr=leader.empno and employee.ename like 'J%';
+select * from emp where deptno in (select deptno from emp where ename='JP');
+select ename,job,sal,deptno from emp where job in (select job from emp where deptno=107) and deptno <> 107;
+select ename,sal,deptno from emp where sal >= all(select sal from emp where deptno=107);
+select * from emp where (deptno,job) in (select deptno,job from emp where ename='TN') and ename != 'TN';
+
+select ename,dname,sal,format(asal,2) from emp,dept,(select avg(sal) asal,deptno dt from emp group by deptno) tmp where emp.deptno=dept.deptno and emp.sal > tmp.asal and emp.deptno=tmp.dt;
+select ename,dname,sal,msal,emp.deptno from emp,dept,(select max(sal) msal,deptno dt from emp group by deptno) tmp where emp.deptno=dept.deptno and emp.sal=tmp.msal and emp.deptno=tmp.dt;
+select dept.dname,dept.deptno,dept.loc,count(*) from emp,dept where emp.deptno=dept.deptno group by emp.deptno; 
+
+
+
+
+
 1 select ename,sal,dname from emp,dept where emp.deptno=dept.deptno;
-2 select dname,ename,sal from emp,dept where emp.deptno=dept.deptno and emp.deptno=10;
+2 select dname,ename,sal from emp,dept where emp.deptno=dept.deptno and emp.deptno=102;
 3 select ename,sal,grade from emp,salgrade where sal between losal and hisal;
 4 select empno,ename from emp where empno=(select mgr from emp where ename='LD');
 	select leader.empno, leader.ename from emp leader, emp worker where leader.empno=worker.mgr and worker.ename='LD';
@@ -503,22 +535,3 @@ call insert_emp(100001, 8000000);
 3 set password=password("999"); set password for 'shen'@'127.0.0.1'=password('999');
 4 grant all on *.* to 'shen'@'127.0.0.1';flush privileges;
 	revoke delete,create on 库.* from 'shen'@'127.0.0.1';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
