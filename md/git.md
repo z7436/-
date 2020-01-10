@@ -109,7 +109,7 @@ Staged：暂存状态，git commit将修改同步到库中 ==> Unmodified
 
 ![文件的四种状态](F:\BIT\github\-\mspaint\文件的四种状态.png)
 
-### 6. git commit 命令详解
+### 6. commit 相关内容详解
 
 ##### 提交
 
@@ -136,5 +136,27 @@ git push的时候如果有冲突，需要解决冲突
 1. git rebase -i + 需要合并的几个分支的前一个分支的哈希值
 2. 弹出一个vim编辑框，squash代表的是合并到前一个分支，保存
 3. 再次弹出一个vim编辑框，这时编辑的是合并后提交的 commit message
+```
+
+##### 修改commit内容
+
+```git
+1. 如果对于最近一次的commit，少提交了内容/少提交了文件/修改错了，修改后再次提交将会有两次commit记录
+   因此可以采用 git commit --amend ，将本次修改(add后)提交到上一次的commit中，作为同一次提交
+   此时若将本地提交到远程仓库，需要使用 git push --force，强制提交，否则git认为本地和远程是有冲突的（因为提交纪录不同）
+2. 如果对于之前的commit，想要修改commit message信息
+   git rebase -i + 哈希值（想要修改commit的前一次的commit哈希值） ==> 将pick改为reword保存 ==> 弹出界面修改commit message信息后保存
+   git push --force 提价到远程仓库
+3. 假若某次提交的时候，少添加了几行代码
+   git rebase -i + 哈希值（想要修改commit的前一次的commit哈希值）==> 将pick改为edit保存 ==> git commit --amend 修改commit message信息 ==> git rabase --continue
+```
+
+##### 查看commit内容
+
+```
+git log
+git log --oneline 只显示哈希值前8位 + commit message信息
+git log --oneline -5 只显示最近提交的5条记录
+git log --oneline -5 --skip=100 跳过前100条记录，显示5条
 ```
 
